@@ -1,18 +1,14 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-
-import "./index.css";
 import Home from "./Home/Home";
 import ChatRoom from "./ChatRoom/ChatRoom";
+import {  Route, Routes } from "react-router-dom";
 
 function App() {
   return (
-    <Router>
-      <Switch>
-        <Route exact path="/" component={Home} />
-        <Route exact path="/:roomId" component={ChatRoom} />
-      </Switch>
-    </Router>
+      <Routes>
+        <Route exact path="/" element={<Home/>} />
+        <Route  path="/room/:id" element={<ChatRoom/>} />
+      </Routes>
   );
 }
 

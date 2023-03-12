@@ -1,48 +1,56 @@
-import React from "react";
+import React, { useState } from "react";
 
-import "./ChatRoom.css";
 import useChat from "../useChat";
+import { useLocation, useParams } from "react-router-dom";
+import Button from "../components/Button";
 
-const ChatRoom = (props) => {
-  const { roomId } = props.match.params;
-  const { messages, sendMessage } = useChat(roomId);
-  const [newMessage, setNewMessage] = React.useState("");
+const ChatRoom = () => {
+  const { id } = useParams();
+  const {state: {username}} = useLocation();
 
-  const handleNewMessageChange = (event) => {
-    setNewMessage(event.target.value);
-  };
+  const [newMessage, setNewMessage] = useState("");
+  const { messages, sendMessage } = useChat(id);
 
-  const handleSendMessage = () => {
-    sendMessage(newMessage);
+  
+  
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    sendMessage(newMessage,username);
     setNewMessage("");
   };
 
   return (
-    <div className="chat-room-container">
-      <h1 className="room-name">Room: {roomId}</h1>
-      <div className="messages-container">
-        <ol className="messages-list">
-          {messages.map((message, i) => (
-            <li
-              key={i}
-              className={`message-item ${
-                message.ownedByCurrentUser ? "my-message" : "received-message"
-              }`}
-            >
-              {message.body}
-            </li>
-          ))}
-        </ol>
+    <div className="bg-slate-200 w-full h-screen py-3">
+      <div className="min-w-[350px] w-full max-w-[750px] m-auto flex rounded  h-full bg-white flex-col">
+        <div className="border-b h-10 w-full flex items-center px-1" >
+          <h1 >Room: {id}</h1>
+        </div>
+        <div className="flex-1   overflow-auto">
+          <div>
+            {messages && messages.map((message, i) => (
+              <div
+                key={i}
+                className={`${message.username === username ? "text-right mb-1 bg-slate-100 px-1": 'text-left mb-1 bg-slate-100 px-1'}`}
+              >
+                <h6 className='text-sm font-semibold text-slate-500'>{message.username}</h6>
+                <p className='text-sm font-light'>{message.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="w-full mt-auto   h-10 flex items-center border-t border pr-1">
+          <form className="w-full flex items-center" onSubmit={handleSendMessage}>
+            <input
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="message..."
+              className="w-full px-1 text-sm outline-none "
+            />
+            {newMessage && <Button label={"Send"} disabled={newMessage} />}
+          </form>
+        </div>
       </div>
-      <textarea
-        value={newMessage}
-        onChange={handleNewMessageChange}
-        placeholder="Write message..."
-        className="new-message-input-field"
-      />
-      <button onClick={handleSendMessage} className="send-message-button">
-        Send
-      </button>
     </div>
   );
 };
